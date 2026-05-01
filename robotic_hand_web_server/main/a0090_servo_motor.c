@@ -30,8 +30,8 @@
 /** 
  * Servo Duty cycles
  */
-#define SERVO_MIN_DUTY    1800   // 0 degrees
-#define SERVO_MAX_DUTY    7864   // 180 degrees
+#define SERVO_MIN_DUTY    3277   // 1ms   = 0°
+#define SERVO_MAX_DUTY    6554   // 2ms   = 180°
 
 // Convert angle to duty cycle
 static uint32_t angle_to_duty(int angle) {
