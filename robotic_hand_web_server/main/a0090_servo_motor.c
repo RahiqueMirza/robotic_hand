@@ -28,6 +28,20 @@
  */
 #define SERVO_MIN_DUTY    3277   // 1ms   = 0°
 #define SERVO_MAX_DUTY    6554   // 2ms   = 180°
+
+/**
+ * Finger flip table
+ * 1 = angle is flipped (180 - angle) due to mirrored mounting
+ * 0 = normal angle
+ */
+static const int finger_flip[5] = {
+    [LEDC_CHANNEL_0] = 1,  // THUMB   
+    [LEDC_CHANNEL_1] = 1,  // INDEX   
+    [LEDC_CHANNEL_2] = 1,  // MIDDLE  
+    [LEDC_CHANNEL_3] = 0,  // RING    
+    [LEDC_CHANNEL_4] = 0,  // PINKY   
+};
+
 // Convert angle to duty cycle
 static uint32_t angle_to_duty(int angle) {
     if (angle < 0) angle = 0;
@@ -72,13 +86,10 @@ void a0090_servor_motor_init(void)
 }
 /**
  * Finger channel mapping (0-based index matches LEDC_CHANNEL_x)
- * Even fingers (index 0, 2, 4 = THUMB, MIDDLE, PINKY) → normal angle
- * Odd fingers  (index 1, 3   = INDEX, RING)            → flipped angle (180 - angle)
  */
 void a0090_servor_motor_set_finger(int finger_location, int finger_angle)
 {
-    // Odd-indexed channels (INDEX = ch1, RING = ch3) are mounted mirrored,
-    // so flip the angle to keep motion direction consistent across all fingers.
-    int angle = (finger_location % 2 != 0) ? (180 - finger_angle) : finger_angle;
+    // Checks if finger angles are flipped, and applies corrections if needed
+    int angle = finger_flip[finger_location] ? (180 - finger_angle) : finger_angle;
     servo_set_angle(finger_location, angle);
 }
