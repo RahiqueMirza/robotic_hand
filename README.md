@@ -28,13 +28,10 @@ A Wi-Fi-controlled robotic hand running on the ESP32. Hosts an embedded web inte
 
 This project uses **ESP-IDF** (tested with v5.5.1).
 
-1. **Install ESP-IDF** following the official guide: https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/
+1. **Install ESP-IDF for VS Code** following the official guide: https://docs.espressif.com/projects/esp-idf/en/v4.2.1/esp32/get-started/vscode-setup.html
 2. **Clone this repo:**
-3. **Open the project folder in ESP-IDF.** From the ESP-IDF terminal/PowerShell, navigate to the project folder, or use the ESP-IDF VS Code extension and open the folder directly.
+3. **Open the project folder in ESP-IDF.** Open the folder directly in VS Code using the ESP-IDF entension.
 4. **Build, flash, and monitor:**
-idf.py build
-idf.py -p <COM_PORT> flash monitor
-Replace `<COM_PORT>` with your ESP32's serial port (e.g. `COM3` on Windows, `/dev/ttyUSB0` on Linux).
 
 ## Usage
 
