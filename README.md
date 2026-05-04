@@ -5,7 +5,7 @@ A Wi-Fi-controlled robotic hand running on the ESP32. Hosts an embedded web inte
 ## Requirements
 1. The systems must run on a web  server that a user can access through an AP.
 2. The system must allow every command from the web page to be registered.
-3. The system shall allow users to open and close fingers together.
+3. The system shall allow users to open and close fingers individually.
 4. The system shall allow users to close and open their hands all at once.
 5. The system shall also allow pre-programmed commands for finger movements.
 
