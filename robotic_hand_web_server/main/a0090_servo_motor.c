@@ -6,10 +6,8 @@
 #include "driver/ledc.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-
 #include "a0090_servo_motor.h"
 #include "task_common.h"
-
 /**
  * Finger pin locations
  */
@@ -18,7 +16,6 @@
 #define SERVO_MIDDLE  18
 #define SERVO_RING    19
 #define SERVO_PINKY   21
-
 /**
  * PWM settings
  */
@@ -26,26 +23,22 @@
 #define LEDC_MODE         LEDC_LOW_SPEED_MODE
 #define LEDC_FREQ_HZ      50
 #define LEDC_RESOLUTION   LEDC_TIMER_16_BIT
-
 /** 
  * Servo Duty cycles
  */
 #define SERVO_MIN_DUTY    3277   // 1ms   = 0°
 #define SERVO_MAX_DUTY    6554   // 2ms   = 180°
-
 // Convert angle to duty cycle
 static uint32_t angle_to_duty(int angle) {
     if (angle < 0) angle = 0;
     if (angle > 180) angle = 180;
     return (angle * (SERVO_MAX_DUTY - SERVO_MIN_DUTY) / 180) + SERVO_MIN_DUTY;
 }
-
 // Move a specific servo
 static void servo_set_angle(ledc_channel_t channel, int angle) {
     ledc_set_duty(LEDC_MODE, channel, angle_to_duty(angle));
     ledc_update_duty(LEDC_MODE, channel);
 }
-
 /**
  * Initialization of servo motors
  */
@@ -60,7 +53,6 @@ void a0090_servor_motor_init(void)
         .clk_cfg         = LEDC_AUTO_CLK
     };
     ESP_ERROR_CHECK(ledc_timer_config(&timer));
-
     // Channel configs for each servo
     ledc_channel_config_t channels[5] = {
         { .gpio_num = SERVO_THUMB,  .channel = LEDC_CHANNEL_0 },
@@ -69,7 +61,6 @@ void a0090_servor_motor_init(void)
         { .gpio_num = SERVO_RING,   .channel = LEDC_CHANNEL_3 },
         { .gpio_num = SERVO_PINKY,  .channel = LEDC_CHANNEL_4 },
     };
-
     // Initialize all channels
     for (int i = 0; i < 5; i++) {
         channels[i].speed_mode = LEDC_MODE;
@@ -79,11 +70,15 @@ void a0090_servor_motor_init(void)
         ESP_ERROR_CHECK(ledc_channel_config(&channels[i]));
     }
 }
-
 /**
- * Setting the finger are the right angle
+ * Finger channel mapping (0-based index matches LEDC_CHANNEL_x)
+ * Even fingers (index 0, 2, 4 = THUMB, MIDDLE, PINKY) → normal angle
+ * Odd fingers  (index 1, 3   = INDEX, RING)            → flipped angle (180 - angle)
  */
 void a0090_servor_motor_set_finger(int finger_location, int finger_angle)
 {
-   servo_set_angle(finger_location, finger_angle);
+    // Odd-indexed channels (INDEX = ch1, RING = ch3) are mounted mirrored,
+    // so flip the angle to keep motion direction consistent across all fingers.
+    int angle = (finger_location % 2 != 0) ? (180 - finger_angle) : finger_angle;
+    servo_set_angle(finger_location, angle);
 }
